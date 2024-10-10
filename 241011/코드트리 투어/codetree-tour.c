@@ -73,7 +73,7 @@ void dijkstra(int source)
         int mini;
         for(int i=0;i<=N-1;i++)
         {
-            if(check[i] != -1 && dist[i] < min)
+            if(check[i] != 1 && dist[i] < min)
             {
                 min = dist[i];
                 mini = i;
@@ -130,6 +130,11 @@ int main(void)
                 }
             }
             dijkstra(0);
+            for(int i=0;i<=N-1;i++)
+            {
+                printf("%d ", dist[i]);
+            }
+            printf("\n");
         }
         else if(inst == 200) // 상품 생성
         {
@@ -153,7 +158,7 @@ int main(void)
         }
         else if(inst == 400) // 최적의 상품 출력
         {
-            if(hp.size == 0 || hp.arr[1].suik <= 0)
+            if(hp.size == 0 || hp.arr[1].suik < 0)
             {
                 printf("-1\n");
             }
