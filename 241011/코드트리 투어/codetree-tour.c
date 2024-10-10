@@ -16,8 +16,8 @@ typedef struct _maxheap_int{
     int arr[2000];
     int size;
 } maxheap_int;
-int** map;
-int* dist;
+int map[2000][2000];
+int dist[2000];
 int N, M;
 void push(maxheap* hp, product element)
 {
@@ -29,7 +29,6 @@ void push(maxheap* hp, product element)
         hp->pos[hp->arr[findingpos].id] = findingpos;
         findingpos = findingpos >> 1;
     }
-    
     hp->arr[findingpos] = element;
     hp->pos[element.id] = findingpos;
 }
@@ -43,7 +42,6 @@ void push_int(maxheap_int* hp, int n, int dist[])
         hp->arr[findingpos] = hp->arr[findingpos >> 1];
         findingpos = findingpos >> 1;
     }
-    
     hp->arr[findingpos] = n;
 }
 
@@ -135,11 +133,8 @@ int main(void)
         if(inst == 100)
         {
             scanf("%d %d", &N, &M);
-            dist = (int*)malloc(sizeof(int) * N);
-            map = (int**)malloc(sizeof(int*) * N);
             for(int i=0;i<=N-1;i++)
             {
-                map[i] = (int*)malloc(sizeof(int) * N);
                 for(int j=0;j<=N-1;j++)
                 {
                     map[i][j] = MAX_DIST;
@@ -209,11 +204,5 @@ int main(void)
             free(tempproduct);
         }
     }
-    for(int i=0;i<=N-1;i++)
-    {
-        free(map[i]);
-    }
-    free(map);
-    free(dist);
     return 0;
 }
