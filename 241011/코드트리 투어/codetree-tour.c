@@ -92,23 +92,20 @@ int pop_int(maxheap_int* hp, int dist[])
 
 void dijkstra(int source)
 {
-    dist[source] = 0;
     maxheap_int hp;
     hp.size = 0;
     for(int i=0;i<=N-1;i++)
     {
-        if(i != source)
-        {
-            dist[i] = MAX_DIST;
-        }
+        dist[i] = MAX_DIST;
     }
+    dist[source] = 0;
     push_int(&hp, source, dist);
     while(hp.size)
     {
         int u = pop_int(&hp, dist);
         for(int v=0;v<=N-1;v++)
         {
-            if(v!=u && map[u][v] != MAX_DIST && dist[u]+map[u][v] < dist[v])
+            if(map[u][v] != MAX_DIST && dist[u]+map[u][v] < dist[v])
             {
                 dist[v] = dist[u]+map[u][v];
                 push_int(&hp, v, dist);
