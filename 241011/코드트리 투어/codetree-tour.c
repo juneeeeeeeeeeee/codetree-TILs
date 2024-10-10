@@ -27,7 +27,7 @@ void push(maxheap* hp, product element)
     {
         hp->arr[findingpos] = hp->arr[findingpos >> 1];
         hp->pos[hp->arr[findingpos].id] = findingpos;
-        findingpos = findingpos >> 1;
+        findingpos >>= 1;
     }
     hp->arr[findingpos] = element;
     hp->pos[element.id] = findingpos;
@@ -40,7 +40,7 @@ void push_int(maxheap_int* hp, int n, int dist[])
     while(findingpos != 1 && dist[n] > dist[hp->arr[findingpos >> 1]])
     {
         hp->arr[findingpos] = hp->arr[findingpos >> 1];
-        findingpos = findingpos >> 1;
+        findingpos >>= 1;
     }
     hp->arr[findingpos] = n;
 }
@@ -62,7 +62,7 @@ product pop(maxheap* hp, int index)
         hp->arr[parent] = hp->arr[child];
         hp->pos[hp->arr[parent].id] = parent;
         parent = child;
-        child = child<<1;
+        child <<= 1;
     }
     hp->arr[parent] = last;
     hp->pos[last.id] = parent;
@@ -84,7 +84,7 @@ int pop_int(maxheap_int* hp, int dist[])
             break;
         hp->arr[parent] = hp->arr[child];
         parent = child;
-        child = child<<1;
+        child <<= 1;
     }
     hp->arr[parent] = last;
     return r;
@@ -178,7 +178,7 @@ int main(void)
                 printf("%d\n", bestproduct.id);
             }
         }
-        else if(inst == 500)
+        else
         {
             int s;
             scanf("%d", &s);
