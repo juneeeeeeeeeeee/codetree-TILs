@@ -121,10 +121,6 @@ int main(void)
     int Q;
     scanf("%d", &Q);
     maxheap hp;
-    for(int i=1;i<=30000;i++)
-    {
-        hp.pos[i] = -1;
-    }
     hp.size = 0;
     for(int instruction_num = 0;instruction_num<=Q-1;instruction_num++)
     {
@@ -168,7 +164,7 @@ int main(void)
         {
             int id;
             scanf("%d", &id);
-            if(hp.pos[id] != -1)
+            if(hp.pos[id] != 0)
             {
                 pop(&hp, hp.pos[id]);
             }
