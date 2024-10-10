@@ -19,7 +19,7 @@ void push(maxheap* hp, product element)
 {
     hp->size++;
     int findingpos = hp->size;
-    while(findingpos != 1 && element.suik > hp->arr[findingpos >> 1].suik)
+    while(findingpos != 1 && (element.suik > hp->arr[findingpos >> 1].suik || (element.suik == hp->arr[findingpos >> 1].suik && element.id < hp->arr[findingpos >> 1].id)))
     {
         hp->arr[findingpos] = hp->arr[findingpos >> 1];
         hp->pos[hp->arr[findingpos].id] = findingpos;
@@ -42,7 +42,7 @@ product pop(maxheap* hp, int index)
     {
         if(child < hp->size && hp->arr[child].suik < hp->arr[child+1].suik)
             child++;
-        if(hp->arr[child].suik < last.suik)
+        if(hp->arr[child].suik < last.suik || ((hp->arr[child].suik == last.suik) && hp->arr[child].id > last.id))
             break;
         hp->arr[parent] = hp->arr[child];
         hp->pos[hp->arr[parent].id] = parent;
