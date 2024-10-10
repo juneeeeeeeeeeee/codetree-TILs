@@ -130,11 +130,6 @@ int main(void)
                 }
             }
             dijkstra(0);
-            for(int i=0;i<=N-1;i++)
-            {
-                printf("%d ", dist[i]);
-            }
-            printf("\n");
         }
         else if(inst == 200) // 상품 생성
         {
