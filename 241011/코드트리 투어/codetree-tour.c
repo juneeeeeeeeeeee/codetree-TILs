@@ -12,6 +12,10 @@ typedef struct _maxheap{
     int pos[30000];
     int size;
 } maxheap;
+typedef struct _maxheap_int{
+    int arr[2000];
+    int size;
+} maxheap_int;
 int** map;
 int* dist;
 int N, M;
@@ -28,6 +32,19 @@ void push(maxheap* hp, product element)
     
     hp->arr[findingpos] = element;
     hp->pos[element.id] = findingpos;
+}
+
+void push_int(maxheap_int* hp, int n, int dist[])
+{
+    hp->size++;
+    int findingpos = hp->size;
+    while(findingpos != 1 && dist[n] > dist[hp->arr[findingpos >> 1]])
+    {
+        hp->arr[findingpos] = hp->arr[findingpos >> 1];
+        findingpos = findingpos >> 1;
+    }
+    
+    hp->arr[findingpos] = n;
 }
 
 product pop(maxheap* hp, int index)
@@ -54,42 +71,52 @@ product pop(maxheap* hp, int index)
     return r;
 }
 
+int pop_int(maxheap_int* hp, int dist[])
+{
+    int r = hp->arr[1];
+    int last = hp->arr[hp->size];
+    hp->size--;
+    int parent = 1;
+    int child = parent << 1;
+    while(child <= hp->size)
+    {
+        if(child < hp->size && dist[hp->arr[child]] < dist[hp->arr[child+1]])
+            child++;
+        if(dist[hp->arr[child]] < dist[last])
+            break;
+        hp->arr[parent] = hp->arr[child];
+        parent = child;
+        child = child<<1;
+    }
+    hp->arr[parent] = last;
+    return r;
+}
+
 void dijkstra(int source)
 {
     dist[source] = 0;
-    int* check = (int*)malloc(sizeof(int) * N);
-    int size = N;
+    maxheap_int hp;
+    hp.size = 0;
     for(int i=0;i<=N-1;i++)
     {
         if(i != source)
         {
             dist[i] = MAX_DIST;
         }
-        check[i] = 0;
     }
-    while(size >= 1)
+    push_int(&hp, source, dist);
+    while(hp.size)
     {
-        int min = MAX_DIST;
-        int mini;
-        for(int i=0;i<=N-1;i++)
+        int u = pop_int(&hp, dist);
+        for(int v=0;v<=N-1;v++)
         {
-            if(check[i] != 1 && dist[i] < min)
+            if(v!=u && map[u][v] != MAX_DIST && dist[u]+map[u][v] < dist[v])
             {
-                min = dist[i];
-                mini = i;
+                dist[v] = dist[u]+map[u][v];
+                push_int(&hp, v, dist);
             }
         }
-        check[mini] = 1;
-        for(int j=0;j<=N-1;j++)
-        {
-            if(check[j] != 1 && map[mini][j] != MAX_DIST && dist[mini]+map[mini][j] < dist[j])
-            {
-                dist[j] = dist[mini]+map[mini][j];
-            }
-        }
-        size--;
     }
-    free(check);
 }
 int main(void)
 {
