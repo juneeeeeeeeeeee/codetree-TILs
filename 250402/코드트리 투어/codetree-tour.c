@@ -28,20 +28,21 @@ int N;
 bool is_alive[30000] = {false};
 void push(maxheap* hp, product element)
 {
-    hp->size++;
-    int findingpos = hp->size;
-    while(findingpos != 1 && (element.suik > hp->arr[findingpos >> 1].suik || (element.suik == hp->arr[findingpos >> 1].suik && element.id < hp->arr[findingpos >> 1].id)))
+    int findingpos = ++hp->size;
+    if(element.suik >= 0) // 수익이 0보다 작으면 정렬할 필요 없이 맨 끝에 붙이기만 하면 됨
     {
-        hp->arr[findingpos] = hp->arr[findingpos >> 1];
-        findingpos = findingpos >> 1;
+        while(findingpos != 1 && (element.suik > hp->arr[findingpos >> 1].suik || (element.suik == hp->arr[findingpos >> 1].suik && element.id < hp->arr[findingpos >> 1].id)))
+        {
+            hp->arr[findingpos] = hp->arr[findingpos >> 1];
+            findingpos = findingpos >> 1;
+        }
     }
     hp->arr[findingpos] = element;
 }
 
 void push_int(maxheap_int* hp, int n)
 {
-    hp->size++;
-    int findingpos = hp->size;
+    int findingpos = ++hp->size;
     while(findingpos != 1 && dist[n] > dist[hp->arr[findingpos >> 1]])
     {
         hp->arr[findingpos] = hp->arr[findingpos >> 1];
@@ -166,19 +167,6 @@ int main(void)
             temp->next = new2;
         }
     }
-    /*
-    for(int i=0;i<N;i++)
-    {
-        printf("%d: ", i);
-        ll_node* temp = map[i]->next;
-        while(temp)
-        {
-            printf("%d %d ", temp->n, temp->dist);
-            temp = temp->next;
-        }
-        printf("\n");
-    }
-    */
     dijkstra(0);
     while(Q--)
     {
@@ -237,6 +225,7 @@ int main(void)
             free(tempproduct);
         }
     }
+    // 메모리 해제
     for(int i=0;i<N;i++)
     {
         while(map[i]->next)
