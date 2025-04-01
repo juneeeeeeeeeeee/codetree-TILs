@@ -57,7 +57,6 @@ product pop(maxheap* hp, int index)
 {
     product r = hp->arr[1];
     product last = hp->arr[hp->size--];
-    if(!hp->size) return r;
     int parent = index;
     int child = parent << 1;
     while(child <= hp->size)
@@ -81,7 +80,6 @@ int pop_int(maxheap_int* hp)
 {
     int r = hp->arr[1];
     int last = hp->arr[hp->size--];
-    if(!hp->size) return r;
     int parent = 1;
     int child = parent << 1;
     while(child <= hp->size)
@@ -189,12 +187,17 @@ int main(void)
             int id;
             scanf("%d", &id);
             if(hp.pos[id])
+            {
+                printf("um");
                 pop(&hp, hp.pos[id]);
+            }
         }
         else if(inst == 400) // 최적의 상품 출력
         {
             if(!hp.size || hp.arr[1].suik < 0)
+            {
                 printf("-1\n");
+            }
             else
             {
                 product bestproduct = pop(&hp, 1);
@@ -215,7 +218,9 @@ int main(void)
             }
             hp.size = 0;
             for(int i=1;i<=heap_size;i++)
+            {
                 push(&hp, tempproduct[i]);
+            }
             free(tempproduct);
         }
     }
