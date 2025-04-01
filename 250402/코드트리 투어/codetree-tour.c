@@ -191,11 +191,13 @@ int main(void)
             for(int i=1;i<=heap_size;i++)
             {
                 tempproduct[i] = pop(&hp);
-                tempproduct[i].suik = tempproduct[i].revenue - dist[tempproduct[i].destination];
+                if(is_alive[tempproduct[i].id])
+                    tempproduct[i].suik = tempproduct[i].revenue - dist[tempproduct[i].destination];
             }
             for(int i=1;i<=heap_size;i++)
             {
-                push(&hp, tempproduct[i]);
+                if(is_alive[tempproduct[i].id])
+                    push(&hp, tempproduct[i]);
             }
             free(tempproduct);
         }
