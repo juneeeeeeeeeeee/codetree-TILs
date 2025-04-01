@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
 #define MAX_DIST 200000
 typedef struct _product{
@@ -92,10 +93,7 @@ void dijkstra(int source)
 {
     maxheap_int hp;
     hp.size = 0;
-    for(int i=0;i<=N-1;i++)
-    {
-        dist[i] = MAX_DIST;
-    }
+    memset(dist, MAX_DIST, sizeof(int) * N);
     dist[source] = 0;
     push_int(&hp, source);
     while(hp.size)
