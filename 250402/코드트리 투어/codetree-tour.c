@@ -11,6 +11,7 @@ typedef struct _product{
 } product;
 typedef struct _maxheap{
     struct _product arr[30000];
+    int pos[30000];
     int size;
 } maxheap;
 typedef struct _maxheap_int{
@@ -25,7 +26,6 @@ typedef struct _ll_node{
 ll_node** map;
 int dist[2000];
 int N;
-bool is_alive[30000] = {false};
 void push(maxheap* hp, product element)
 {
     int findingpos = ++hp->size;
@@ -34,10 +34,12 @@ void push(maxheap* hp, product element)
         while(findingpos != 1 && (element.suik > hp->arr[findingpos >> 1].suik || (element.suik == hp->arr[findingpos >> 1].suik && element.id < hp->arr[findingpos >> 1].id)))
         {
             hp->arr[findingpos] = hp->arr[findingpos >> 1];
+            hp->pos[hp->arr[findingpos].id] = findingpos;
             findingpos = findingpos >> 1;
         }
     }
     hp->arr[findingpos] = element;
+    hp->pos[element.id] = findingpos;
 }
 
 void push_int(maxheap_int* hp, int n)
@@ -51,28 +53,27 @@ void push_int(maxheap_int* hp, int n)
     hp->arr[findingpos] = n;
 }
 
-product pop(maxheap* hp)
+product pop(maxheap* hp, int index)
 {
     product r = hp->arr[1];
     product last = hp->arr[hp->size--];
-    while(hp->size && !is_alive[last.id])
-    {
-        last = hp->arr[hp->size--];
-    }
     if(!hp->size) return r;
-    int parent = 1;
+    int parent = index;
     int child = parent << 1;
     while(child <= hp->size)
     {
         if(child < hp->size && ((hp->arr[child].suik < hp->arr[child+1].suik) || (hp->arr[child].suik == hp->arr[child+1].suik && hp->arr[child].id>hp->arr[child+1].id)))
             child++;
-        if(hp->arr[child].suik < 0 || !is_alive[hp->arr[child].id] || (hp->arr[child].suik < last.suik || ((hp->arr[child].suik == last.suik) && hp->arr[child].id > last.id)))
+        if(hp->arr[child].suik < 0 || (hp->arr[child].suik < last.suik || ((hp->arr[child].suik == last.suik) && hp->arr[child].id > last.id)))
             break;
         hp->arr[parent] = hp->arr[child];
+        hp->pos[hp->arr[parent].id] = parent;
         parent = child;
         child = child<<1;
     }
     hp->arr[parent] = last;
+    hp->pos[last.id] = parent;
+    hp->pos[r.id] = 0;
     return r;
 }
 
@@ -181,30 +182,23 @@ int main(void)
             int id, revenue, dest;
             scanf("%d %d %d", &id, &revenue, &dest);
             product newproduct = {id, revenue-dist[dest], revenue, dest};
-            is_alive[id] = true;
             push(&hp, newproduct);
         }
         else if(inst == 300) // 상품 취소
         {
             int id;
             scanf("%d", &id);
-            is_alive[id] = false;
+            if(hp.pos[id])
+                pop(&hp, hp.pos[id]);
         }
         else if(inst == 400) // 최적의 상품 출력
         {
-            while(1)
+            if(!hp.size || hp.arr[1].suik < 0)
+                printf("-1\n");
+            else
             {
-                if(!hp.size || (is_alive[hp.arr[1].id] && hp.arr[1].suik<0))
-                {
-                    printf("-1\n");
-                    break;
-                }
-                product bestproduct = pop(&hp);
-                if(is_alive[bestproduct.id])
-                {
-                    printf("%d\n", bestproduct.id);
-                    break;
-                }
+                product bestproduct = pop(&hp, 1);
+                printf("%d\n", bestproduct.id);
             }
         }
         else if(inst == 500)
@@ -217,15 +211,11 @@ int main(void)
             for(int i=1;i<=heap_size;i++)
             {
                 tempproduct[i] = hp.arr[i]; // 굳이 pop할 필요 없음
-                if(is_alive[tempproduct[i].id])
-                    tempproduct[i].suik = tempproduct[i].revenue - dist[tempproduct[i].destination];
+                tempproduct[i].suik = tempproduct[i].revenue - dist[tempproduct[i].destination];
             }
             hp.size = 0;
             for(int i=1;i<=heap_size;i++)
-            {
-                if(is_alive[tempproduct[i].id])
-                    push(&hp, tempproduct[i]);
-            }
+                push(&hp, tempproduct[i]);
             free(tempproduct);
         }
     }
