@@ -55,7 +55,7 @@ void push_int(maxheap_int* hp, int n)
 
 product pop(maxheap* hp, int index)
 {
-    product r = hp->arr[1];
+    product r = hp->arr[index];
     product last = hp->arr[hp->size--];
     int parent = index;
     int child = parent << 1;
@@ -187,7 +187,9 @@ int main(void)
             int id;
             scanf("%d", &id);
             if(hp.pos[id])
+            {
                 pop(&hp, hp.pos[id]);
+            }
         }
         else if(inst == 400) // 최적의 상품 출력
         {
