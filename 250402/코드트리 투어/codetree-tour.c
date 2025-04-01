@@ -55,6 +55,10 @@ product pop(maxheap* hp)
 {
     product r = hp->arr[1];
     product last = hp->arr[hp->size--];
+    while(hp->size && !is_alive[last.id])
+    {
+        last = hp->arr[hp->size--];
+    }
     if(!hp->size) return r;
     int parent = 1;
     int child = parent << 1;
@@ -62,7 +66,7 @@ product pop(maxheap* hp)
     {
         if(child < hp->size && ((hp->arr[child].suik < hp->arr[child+1].suik) || (hp->arr[child].suik == hp->arr[child+1].suik && hp->arr[child].id>hp->arr[child+1].id)))
             child++;
-        if(hp->arr[child].suik < 0 || (hp->arr[child].suik < last.suik || ((hp->arr[child].suik == last.suik) && hp->arr[child].id > last.id)))
+        if(hp->arr[child].suik < 0 || !is_alive[hp->arr[child].id] || (hp->arr[child].suik < last.suik || ((hp->arr[child].suik == last.suik) && hp->arr[child].id > last.id)))
             break;
         hp->arr[parent] = hp->arr[child];
         parent = child;
