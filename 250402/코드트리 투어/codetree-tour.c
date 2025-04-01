@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #define MAX_DIST 200000
 typedef struct _product{
     int id;
@@ -9,7 +10,6 @@ typedef struct _product{
 } product;
 typedef struct _maxheap{
     struct _product arr[30000];
-    int pos[30000];
     int size;
 } maxheap;
 typedef struct _maxheap_int{
@@ -19,6 +19,7 @@ typedef struct _maxheap_int{
 int map[2000][2000];
 int dist[2000];
 int N, M;
+bool is_alive[30000] = {false};
 void push(maxheap* hp, product element)
 {
     hp->size++;
@@ -26,11 +27,9 @@ void push(maxheap* hp, product element)
     while(findingpos != 1 && (element.suik > hp->arr[findingpos >> 1].suik || (element.suik == hp->arr[findingpos >> 1].suik && element.id < hp->arr[findingpos >> 1].id)))
     {
         hp->arr[findingpos] = hp->arr[findingpos >> 1];
-        hp->pos[hp->arr[findingpos].id] = findingpos;
         findingpos = findingpos >> 1;
     }
     hp->arr[findingpos] = element;
-    hp->pos[element.id] = findingpos;
 }
 
 void push_int(maxheap_int* hp, int n)
@@ -45,12 +44,12 @@ void push_int(maxheap_int* hp, int n)
     hp->arr[findingpos] = n;
 }
 
-product pop(maxheap* hp, int index)
+product pop(maxheap* hp)
 {
-    product r = hp->arr[index];
+    product r = hp->arr[1];
     product last = hp->arr[hp->size];
     hp->size--;
-    int parent = index;
+    int parent = 1;
     int child = parent << 1;
     while(child <= hp->size)
     {
@@ -59,13 +58,10 @@ product pop(maxheap* hp, int index)
         if(hp->arr[child].suik < last.suik || ((hp->arr[child].suik == last.suik) && hp->arr[child].id > last.id))
             break;
         hp->arr[parent] = hp->arr[child];
-        hp->pos[hp->arr[parent].id] = parent;
         parent = child;
         child = child<<1;
     }
     hp->arr[parent] = last;
-    hp->pos[last.id] = parent;
-    hp->pos[r.id] = 0;
     return r;
 }
 
@@ -152,11 +148,8 @@ int main(void)
         {
             int id, revenue, dest;
             scanf("%d %d %d", &id, &revenue, &dest);
-            product newproduct;
-            newproduct.id = id;
-            newproduct.revenue = revenue;
-            newproduct.destination = dest;
-            newproduct.suik = revenue-dist[dest];
+            product newproduct = {id, revenue-dist[dest], revenue, dest};
+            is_alive[id] = true;
             // printf("%d\n", hp.size);
             push(&hp, newproduct);
         }
@@ -164,22 +157,28 @@ int main(void)
         {
             int id;
             scanf("%d", &id);
+            is_alive[id] = false;
             // printf("%d\n", hp.pos[id]);
-            if(hp.pos[id])
+            /*if(hp.pos[id])
             {
                 pop(&hp, hp.pos[id]);
-            }
+            }*/
         }
         else if(inst == 400) // 최적의 상품 출력
         {
-            if(hp.size == 0 || hp.arr[1].suik < 0)
+            while(1)
             {
-                printf("-1\n");
-            }
-            else
-            {
-                product bestproduct = pop(&hp, 1);
-                printf("%d\n", bestproduct.id);
+                if(!hp.size || (is_alive[hp.arr[1].id] && hp.arr[1].suik<0))
+                {
+                    printf("=1\n");
+                    break;
+                }
+                product bestproduct = pop(&hp);
+                if(is_alive[bestproduct.id])
+                {
+                    printf("%d\n", bestproduct.id);
+                    break;
+                }
             }
         }
         else if(inst == 500)
@@ -191,7 +190,7 @@ int main(void)
             product* tempproduct = (product*)malloc(sizeof(product) * (heap_size+1));
             for(int i=1;i<=heap_size;i++)
             {
-                tempproduct[i] = pop(&hp, 1);
+                tempproduct[i] = pop(&hp);
                 tempproduct[i].suik = tempproduct[i].revenue - dist[tempproduct[i].destination];
             }
             for(int i=1;i<=heap_size;i++)
