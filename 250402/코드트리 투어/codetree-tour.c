@@ -187,10 +187,7 @@ int main(void)
             int id;
             scanf("%d", &id);
             if(hp.pos[id])
-            {
-                printf("um");
                 pop(&hp, hp.pos[id]);
-            }
         }
         else if(inst == 400) // 최적의 상품 출력
         {
