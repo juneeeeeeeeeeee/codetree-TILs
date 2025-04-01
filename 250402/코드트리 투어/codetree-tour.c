@@ -48,8 +48,8 @@ void push_int(maxheap_int* hp, int n)
 product pop(maxheap* hp)
 {
     product r = hp->arr[1];
-    product last = hp->arr[hp->size];
-    hp->size--;
+    product last = hp->arr[hp->size--];
+    if(!hp->size) return r;
     int parent = 1;
     int child = parent << 1;
     while(child <= hp->size)
@@ -69,10 +69,8 @@ product pop(maxheap* hp)
 int pop_int(maxheap_int* hp)
 {
     int r = hp->arr[1];
-    int last = hp->arr[hp->size];
-    hp->size--;
-    if(hp->size == 0)
-        return r;
+    int last = hp->arr[hp->size--];
+    if(!hp->size) return r;
     int parent = 1;
     int child = parent << 1;
     while(child <= hp->size)
@@ -111,45 +109,42 @@ void dijkstra(int source)
 }
 int main(void)
 {
-    int Q;
+    int Q, M;
     scanf("%d", &Q);
     maxheap hp;
     hp.size = 0;
-    for(int instruction_num = 0;instruction_num<=Q-1;instruction_num++)
+    scanf("%*d"); // inst 100
+    Q--;
+    scanf("%d %d", &N, &M);
+    for(int i=0;i<=N-1;i++)
+    {
+        for(int j=0;j<=N-1;j++)
+        {
+            map[i][j] = MAX_DIST;
+        }
+        map[i][i] = 0;
+    }
+    for(int i=0;i<=M-1;i++)
+    {
+        int v, u, w;
+        scanf("%d %d %d", &v, &u, &w);
+        if(map[u][v] > w)
+        {
+            map[u][v] = w;
+            map[v][u] = w;
+        }
+    }
+    dijkstra(0);
+    while(Q--)
     {
         int inst;
         scanf("%d", &inst);
-        if(inst == 100)
-        {
-            int M;
-            scanf("%d %d", &N, &M);
-            for(int i=0;i<=N-1;i++)
-            {
-                for(int j=0;j<=N-1;j++)
-                {
-                    map[i][j] = MAX_DIST;
-                }
-                map[i][i] = 0;
-            }
-            for(int i=0;i<=M-1;i++)
-            {
-                int v, u, w;
-                scanf("%d %d %d", &v, &u, &w);
-                if(map[u][v] > w)
-                {
-                    map[u][v] = w;
-                    map[v][u] = w;
-                }
-            }
-            dijkstra(0);
-        }
-        else if(inst == 200) // 상품 생성
+        if(inst == 200) // 상품 생성
         {
             int id, revenue, dest;
             scanf("%d %d %d", &id, &revenue, &dest);
             product newproduct = {id, revenue-dist[dest], revenue, dest};
             is_alive[id] = true;
-            // printf("%d\n", hp.size);
             push(&hp, newproduct);
         }
         else if(inst == 300) // 상품 취소
