@@ -18,7 +18,7 @@ typedef struct _maxheap_int{
 } maxheap_int;
 int map[2000][2000];
 int dist[2000];
-int N, M;
+int N;
 bool is_alive[30000] = {false};
 void push(maxheap* hp, product element)
 {
@@ -123,6 +123,7 @@ int main(void)
         scanf("%d", &inst);
         if(inst == 100)
         {
+            int M;
             scanf("%d %d", &N, &M);
             for(int i=0;i<=N-1;i++)
             {
@@ -158,11 +159,6 @@ int main(void)
             int id;
             scanf("%d", &id);
             is_alive[id] = false;
-            // printf("%d\n", hp.pos[id]);
-            /*if(hp.pos[id])
-            {
-                pop(&hp, hp.pos[id]);
-            }*/
         }
         else if(inst == 400) // 최적의 상품 출력
         {
@@ -187,13 +183,14 @@ int main(void)
             scanf("%d", &s);
             dijkstra(s);
             int heap_size = hp.size;
-            product* tempproduct = (product*)malloc(sizeof(product) * (heap_size+1));
+            product* tempproduct = (product*)malloc(sizeof(product) * heap_size);
             for(int i=1;i<=heap_size;i++)
             {
-                tempproduct[i] = pop(&hp);
+                tempproduct[i] = hp.arr[i]; // 굳이 pop할 필요 없음
                 if(is_alive[tempproduct[i].id])
                     tempproduct[i].suik = tempproduct[i].revenue - dist[tempproduct[i].destination];
             }
+            hp.size = 0;
             for(int i=1;i<=heap_size;i++)
             {
                 if(is_alive[tempproduct[i].id])
