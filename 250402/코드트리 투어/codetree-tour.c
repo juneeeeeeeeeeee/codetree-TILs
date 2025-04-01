@@ -183,7 +183,7 @@ int main(void)
             scanf("%d", &s);
             dijkstra(s);
             int heap_size = hp.size;
-            product* tempproduct = (product*)malloc(sizeof(product) * heap_size);
+            product* tempproduct = (product*)malloc(sizeof(product) * (heap_size+1));
             for(int i=1;i<=heap_size;i++)
             {
                 tempproduct[i] = hp.arr[i]; // 굳이 pop할 필요 없음
