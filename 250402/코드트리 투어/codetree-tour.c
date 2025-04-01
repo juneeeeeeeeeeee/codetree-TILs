@@ -17,7 +17,12 @@ typedef struct _maxheap_int{
     int arr[2000];
     int size;
 } maxheap_int;
-int map[2000][2000];
+typedef struct _ll_node{
+    int n;
+    int dist;
+    struct _ll_node* next;
+} ll_node;
+ll_node** map;
 int dist[2000];
 int N;
 bool is_alive[30000] = {false};
@@ -97,13 +102,15 @@ void dijkstra(int source)
     while(hp.size)
     {
         int u = pop_int(&hp);
-        for(int v=0;v<=N-1;v++)
+        ll_node* temp = map[u]->next;
+        while(temp)
         {
-            if(map[u][v] != MAX_DIST && dist[u]+map[u][v] < dist[v])
+            if(dist[u]+temp->dist < dist[temp->n])
             {
-                dist[v] = dist[u]+map[u][v];
-                push_int(&hp, v);
+                dist[temp->n] = dist[u]+temp->dist;
+                push_int(&hp, temp->n);
             }
+            temp = temp->next;
         }
     }
 }
@@ -116,24 +123,62 @@ int main(void)
     scanf("%*d"); // inst 100
     Q--;
     scanf("%d %d", &N, &M);
-    for(int i=0;i<=N-1;i++)
+    map = (ll_node**)malloc(sizeof(ll_node*) * N);
+    for(int i=0;i<N;i++)
     {
-        for(int j=0;j<=N-1;j++)
-        {
-            map[i][j] = MAX_DIST;
-        }
-        map[i][i] = 0;
+        map[i] = (ll_node*)malloc(sizeof(ll_node));
+        map[i]->n = 0;
+        map[i]->next = NULL;
     }
-    for(int i=0;i<=M-1;i++)
+    while(M--)
     {
         int v, u, w;
         scanf("%d %d %d", &v, &u, &w);
-        if(map[u][v] > w)
+        if(u == v) continue;
+        ll_node* temp = map[v];
+        while(temp->next && temp->next->n < u)
+            temp = temp->next;
+        if(temp->next && temp->next->n == u)
         {
-            map[u][v] = w;
-            map[v][u] = w;
+            if(temp->next->dist > w) temp->next->dist = w;
+        }
+        else
+        {
+            ll_node* new = (ll_node*)malloc(sizeof(ll_node));
+            new->n = u;
+            new->dist = w;
+            new->next = temp->next;
+            temp->next = new;
+        }
+        temp = map[u];
+        while(temp->next && temp->next->n < v)
+            temp = temp->next;
+        if(temp->next && temp->next->n == v)
+        {
+            if(temp->next->dist > w) temp->next->dist = w;
+        }
+        else
+        {
+            ll_node* new2 = (ll_node*)malloc(sizeof(ll_node));
+            new2->n = v;
+            new2->dist = w;
+            new2->next = temp->next;
+            temp->next = new2;
         }
     }
+    /*
+    for(int i=0;i<N;i++)
+    {
+        printf("%d: ", i);
+        ll_node* temp = map[i]->next;
+        while(temp)
+        {
+            printf("%d %d ", temp->n, temp->dist);
+            temp = temp->next;
+        }
+        printf("\n");
+    }
+    */
     dijkstra(0);
     while(Q--)
     {
@@ -192,5 +237,17 @@ int main(void)
             free(tempproduct);
         }
     }
+    for(int i=0;i<N;i++)
+    {
+        while(map[i]->next)
+        {
+            ll_node* temp = map[i]->next;
+            ll_node* temptemp = temp->next;
+            free(temp);
+            map[i]->next = temptemp;
+        }
+        free(map[i]);
+    }
+    free(map);
     return 0;
 }
