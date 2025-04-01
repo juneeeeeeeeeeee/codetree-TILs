@@ -170,7 +170,7 @@ int main(void)
             {
                 if(!hp.size || (is_alive[hp.arr[1].id] && hp.arr[1].suik<0))
                 {
-                    printf("=1\n");
+                    printf("-1\n");
                     break;
                 }
                 product bestproduct = pop(&hp);
