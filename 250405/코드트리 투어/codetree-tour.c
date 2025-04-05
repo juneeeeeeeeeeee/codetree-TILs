@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#define MAX_DIST 200000
+#define MAX_DIST 2147483647
 typedef struct _product{
     int id;
     int suik;
