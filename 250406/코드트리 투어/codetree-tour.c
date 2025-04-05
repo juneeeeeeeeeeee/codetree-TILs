@@ -17,7 +17,7 @@ typedef struct _maxheap{
     int size;
 } maxheap;
 typedef struct _minheap_int{
-    struct _minheap_node arr[20000];
+    struct _minheap_node arr[10000];
     int size;
 } minheap_int;
 int dist[2000];
@@ -59,7 +59,6 @@ product pop(maxheap* hp)
         last = hp->arr[hp->size--];
     }
     if(!hp->size) return r;
-    int parent = 1;
     int child = 2;
     while(child <= hp->size)
     {
@@ -67,11 +66,10 @@ product pop(maxheap* hp)
             child++;
         if(hp->arr[child].suik < 0 || (hp->arr[child].suik < last.suik || ((hp->arr[child].suik == last.suik) && hp->arr[child].id > last.id)))
             break;
-        hp->arr[parent] = hp->arr[child];
-        parent = child;
-        child = child<<1;
+        hp->arr[child >> 1] = hp->arr[child];
+        child = child << 1;
     }
-    hp->arr[parent] = last;
+    hp->arr[child >> 1] = last;
     return r;
 }
 
@@ -80,7 +78,6 @@ minheap_node pop_int(minheap_int* hp)
     minheap_node r = hp->arr[1];
     minheap_node last = hp->arr[hp->size--];
     if(!hp->size) return r;
-    int parent = 1;
     int child = 2;
     while(child <= hp->size)
     {
@@ -88,11 +85,10 @@ minheap_node pop_int(minheap_int* hp)
             child++;
         if(hp->arr[child].fake_dist > last.fake_dist)
             break;
-        hp->arr[parent] = hp->arr[child];
-        parent = child;
-        child = child<<1;
+        hp->arr[child >> 1] = hp->arr[child];
+        child = child << 1;
     }
-    hp->arr[parent] = last;
+    hp->arr[child >> 1] = last;
     return r;
 }
 
@@ -101,9 +97,7 @@ void dijkstra(int source)
     minheap_int hp;
     hp.size = 0;
     for(int i=0;i<N;i++)
-    {
         dist[i] = INT_MAX;
-    }
     dist[source] = 0;
     push_int(&hp, source, 0);
     while(hp.size)
@@ -131,12 +125,8 @@ int main(void)
     Q--;
     scanf("%d %d", &N, &M);
     for(int i=0;i<N;i++)
-    {
         for(int j=0;j<N;j++)
-        {
             map[i][j] = INT_MAX;
-        }
-    }
     while(M--)
     {
         int v, u, w;
@@ -199,10 +189,8 @@ int main(void)
             }
             hp.size = 0;
             for(int i=1;i<=heap_size;i++)
-            {
                 if(is_alive[tempproduct[i].id])
                     push(&hp, tempproduct[i]);
-            }
             free(tempproduct);
         }
     }
