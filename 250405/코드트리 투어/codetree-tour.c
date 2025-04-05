@@ -18,7 +18,7 @@ typedef struct _maxheap{
     int size;
 } maxheap;
 typedef struct _minheap_int{
-    struct _minheap_node arr[2000];
+    struct _minheap_node arr[20000];
     int size;
 } minheap_int;
 typedef struct _ll_node{
