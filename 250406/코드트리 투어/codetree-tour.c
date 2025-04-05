@@ -13,7 +13,7 @@ typedef struct _minheap_node{
     int fake_dist;
 } minheap_node;
 typedef struct _maxheap{
-    struct _product arr[30000];
+    struct _product arr[30001];
     int size;
 } maxheap;
 typedef struct _minheap_int{
@@ -23,7 +23,7 @@ typedef struct _minheap_int{
 int dist[2000];
 int map[2000][2000];
 int N;
-bool is_alive[30000] = {false};
+bool is_alive[30001] = {false};
 void push(maxheap* hp, product element)
 {
     int findingpos = ++hp->size;
@@ -98,13 +98,11 @@ minheap_node pop_int(minheap_int* hp)
 
 void dijkstra(int source)
 {
-    bool check[2000];
     minheap_int hp;
     hp.size = 0;
     for(int i=0;i<N;i++)
     {
         dist[i] = INT_MAX;
-        check[i] = false;
     }
     dist[source] = 0;
     push_int(&hp, source, 0);
@@ -112,10 +110,9 @@ void dijkstra(int source)
     {
         minheap_node u = pop_int(&hp);
         if(u.fake_dist > dist[u.node]) continue; // update 안된 값
-        check[u.node] = true;
         for(int i=0;i<N;i++)
         {
-            if(map[u.node][i] != INT_MAX && !check[i] && dist[u.node] + map[u.node][i] < dist[i])
+            if(map[u.node][i] != INT_MAX && dist[u.node] + map[u.node][i] < dist[i])
             {
                 dist[i] = dist[u.node] + map[u.node][i];
                 push_int(&hp, i, dist[i]);
@@ -144,7 +141,7 @@ int main(void)
     {
         int v, u, w;
         scanf("%d %d %d", &v, &u, &w);
-        if(u == v) continue;
+        if(u == v) continue; // map[u][u] = INT_MAX
         if(map[u][v] > w)
         {
             map[u][v] = w;
