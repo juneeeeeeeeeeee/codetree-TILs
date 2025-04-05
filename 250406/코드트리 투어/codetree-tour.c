@@ -20,13 +20,8 @@ typedef struct _minheap_int{
     struct _minheap_node arr[20000];
     int size;
 } minheap_int;
-typedef struct _ll_node{
-    int n;
-    int dist;
-    struct _ll_node* next;
-} ll_node;
-ll_node** map;
 int dist[2000];
+int map[2000][2000];
 int N;
 bool is_alive[30000] = {false};
 void push(maxheap* hp, product element)
@@ -115,15 +110,13 @@ void dijkstra(int source)
     {
         minheap_node u = pop_int(&hp);
         if(u.fake_dist > dist[u.node]) continue; // update 안된 값
-        ll_node* temp = map[u.node]->next;
-        while(temp)
+        for(int i=0;i<N;i++)
         {
-            if(dist[u.node] + temp->dist < dist[temp->n])
+            if(map[u.node][i] != INT_MAX && u.node != i && dist[u.node] + map[u.node][i] < dist[i])
             {
-                dist[temp->n] = dist[u.node] + temp->dist;
-                push_int(&hp, temp->n, dist[temp->n]);
+                dist[i] = dist[u.node] + map[u.node][i];
+                push_int(&hp, i, dist[i]);
             }
-            temp = temp->next;
         }
     }
 }
@@ -136,47 +129,22 @@ int main(void)
     scanf("%*d"); // inst 100
     Q--;
     scanf("%d %d", &N, &M);
-    map = (ll_node**)malloc(sizeof(ll_node*) * N);
     for(int i=0;i<N;i++)
     {
-        map[i] = (ll_node*)malloc(sizeof(ll_node));
-        map[i]->n = 0;
-        map[i]->next = NULL;
+        for(int j=0;j<N;j++)
+        {
+            map[i][j] = INT_MAX;
+        }
     }
     while(M--)
     {
         int v, u, w;
         scanf("%d %d %d", &v, &u, &w);
         if(u == v) continue;
-        ll_node* temp = map[v];
-        while(temp->next && temp->next->n < u)
-            temp = temp->next;
-        if(temp->next && temp->next->n == u)
+        if(map[u][v] > w)
         {
-            if(temp->next->dist > w) temp->next->dist = w;
-        }
-        else
-        {
-            ll_node* new = (ll_node*)malloc(sizeof(ll_node));
-            new->n = u;
-            new->dist = w;
-            new->next = temp->next;
-            temp->next = new;
-        }
-        temp = map[u];
-        while(temp->next && temp->next->n < v)
-            temp = temp->next;
-        if(temp->next && temp->next->n == v)
-        {
-            if(temp->next->dist > w) temp->next->dist = w;
-        }
-        else
-        {
-            ll_node* new2 = (ll_node*)malloc(sizeof(ll_node));
-            new2->n = v;
-            new2->dist = w;
-            new2->next = temp->next;
-            temp->next = new2;
+            map[u][v] = w;
+            map[v][u] = w;
         }
     }
     dijkstra(0);
@@ -202,7 +170,7 @@ int main(void)
         {
             while(1)
             {
-                if(!hp.size || hp.arr[1].suik<0)
+                if(!hp.size || (is_alive[hp.arr[1].id] && hp.arr[1].suik<0))
                 {
                     printf("-1\n");
                     break;
@@ -237,18 +205,5 @@ int main(void)
             free(tempproduct);
         }
     }
-    // 메모리 해제
-    for(int i=0;i<N;i++)
-    {
-        while(map[i]->next)
-        {
-            ll_node* temp = map[i]->next;
-            ll_node* temptemp = temp->next;
-            free(temp);
-            map[i]->next = temptemp;
-        }
-        free(map[i]);
-    }
-    free(map);
     return 0;
 }
