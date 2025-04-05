@@ -59,7 +59,7 @@ product pop(maxheap* hp)
 {
     product r = hp->arr[1];
     product last = hp->arr[hp->size--];
-    while(!is_alive[last.id])
+    while(hp->size && !is_alive[last.id])
     {
         last = hp->arr[hp->size--];
     }
