@@ -105,7 +105,7 @@ void dijkstra(int source)
 {
     minheap_int hp;
     hp.size = 0;
-    for(int i=1;i<=N;i++)
+    for(int i=0;i<=N-1;i++)
     {
         dist[i] = MAX_DIST;
     }
