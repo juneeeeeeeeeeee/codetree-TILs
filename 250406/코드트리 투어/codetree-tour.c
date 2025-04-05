@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#define MAX_DIST 2147483647
+#include <limits.h>
 typedef struct _product{
     int id;
     int suik;
@@ -32,10 +32,13 @@ bool is_alive[30000] = {false};
 void push(maxheap* hp, product element)
 {
     int findingpos = ++hp->size;
-    while(findingpos != 1 && (element.suik > hp->arr[findingpos >> 1].suik || (element.suik == hp->arr[findingpos >> 1].suik && element.id < hp->arr[findingpos >> 1].id)))
+    if(element.suik >= 0) // 수익이 0보다 작으면 정렬할 필요 없이 맨 끝에 붙이기만 하면 됨
     {
-        hp->arr[findingpos] = hp->arr[findingpos >> 1];
-        findingpos = findingpos >> 1;
+        while(findingpos != 1 && (element.suik > hp->arr[findingpos >> 1].suik || (element.suik == hp->arr[findingpos >> 1].suik && element.id < hp->arr[findingpos >> 1].id)))
+        {
+            hp->arr[findingpos] = hp->arr[findingpos >> 1];
+            findingpos = findingpos >> 1;
+        }
     }
     hp->arr[findingpos] = element;
 }
@@ -67,7 +70,7 @@ product pop(maxheap* hp)
     {
         if(child < hp->size && ((hp->arr[child].suik < hp->arr[child+1].suik) || (hp->arr[child].suik == hp->arr[child+1].suik && hp->arr[child].id>hp->arr[child+1].id)))
             child++;
-        if(hp->arr[child].suik < last.suik || ((hp->arr[child].suik == last.suik) && hp->arr[child].id > last.id))
+        if(hp->arr[child].suik < 0 || (hp->arr[child].suik < last.suik || ((hp->arr[child].suik == last.suik) && hp->arr[child].id > last.id)))
             break;
         hp->arr[parent] = hp->arr[child];
         parent = child;
@@ -104,7 +107,7 @@ void dijkstra(int source)
     hp.size = 0;
     for(int i=0;i<=N-1;i++)
     {
-        dist[i] = MAX_DIST;
+        dist[i] = INT_MAX;
     }
     dist[source] = 0;
     push_int(&hp, source, 0);
@@ -199,7 +202,7 @@ int main(void)
         {
             while(1)
             {
-                if(!hp.size || (is_alive[hp.arr[1].id] && hp.arr[1].suik<0))
+                if(!hp.size || hp.arr[1].suik<0)
                 {
                     printf("-1\n");
                     break;
