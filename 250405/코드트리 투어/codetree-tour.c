@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
 #define MAX_DIST 200000
 typedef struct _product{
@@ -66,7 +65,7 @@ product pop(maxheap* hp)
     }
     if(!hp->size) return r;
     int parent = 1;
-    int child = parent << 1;
+    int child = 2;
     while(child <= hp->size)
     {
         if(child < hp->size && ((hp->arr[child].suik < hp->arr[child+1].suik) || (hp->arr[child].suik == hp->arr[child+1].suik && hp->arr[child].id>hp->arr[child+1].id)))
@@ -106,7 +105,10 @@ void dijkstra(int source)
 {
     minheap_int hp;
     hp.size = 0;
-    memset(dist, MAX_DIST, sizeof(int) * N);
+    for(int i=1;i<=N;i++)
+    {
+        dist[i] = MAX_DIST;
+    }
     dist[source] = 0;
     push_int(&hp, source, 0);
     while(hp.size)
