@@ -59,7 +59,7 @@ product pop(maxheap* hp)
 {
     product r = hp->arr[1];
     product last = hp->arr[hp->size--];
-    while(hp->size && !is_alive[last.id])
+    while(!is_alive[last.id])
     {
         last = hp->arr[hp->size--];
     }
@@ -70,7 +70,7 @@ product pop(maxheap* hp)
     {
         if(child < hp->size && ((hp->arr[child].suik < hp->arr[child+1].suik) || (hp->arr[child].suik == hp->arr[child+1].suik && hp->arr[child].id>hp->arr[child+1].id)))
             child++;
-        if(hp->arr[child].suik < 0 || !is_alive[hp->arr[child].id] || (hp->arr[child].suik < last.suik || ((hp->arr[child].suik == last.suik) && hp->arr[child].id > last.id)))
+        if(hp->arr[child].suik < 0 || (hp->arr[child].suik < last.suik || ((hp->arr[child].suik == last.suik) && hp->arr[child].id > last.id)))
             break;
         hp->arr[parent] = hp->arr[child];
         parent = child;
@@ -118,9 +118,9 @@ void dijkstra(int source)
         ll_node* temp = map[u.node]->next;
         while(temp)
         {
-            if(dist[u.node]+temp->dist < dist[temp->n])
+            if(dist[u.node] + temp->dist < dist[temp->n])
             {
-                dist[temp->n] = dist[u.node]+temp->dist;
+                dist[temp->n] = dist[u.node] + temp->dist;
                 push_int(&hp, temp->n, dist[temp->n]);
             }
             temp = temp->next;
@@ -151,9 +151,9 @@ int main(void)
         ll_node* temp = map[v];
         while(temp->next && temp->next->n < u)
             temp = temp->next;
-        if(temp->n == u)
+        if(temp->next && temp->next->n == u)
         {
-            if(temp->dist > w) temp->dist = w;
+            if(temp->next->dist > w) temp->next->dist = w;
         }
         else
         {
