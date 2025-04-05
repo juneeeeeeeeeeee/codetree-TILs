@@ -47,7 +47,7 @@ void push(maxheap* hp, product element)
 void push_int(minheap_int* hp, int n, int fake_dist)
 {
     int findingpos = ++hp->size;
-    while(findingpos != 1 && fake_dist < dist[hp->arr[findingpos >> 1].fake_dist])
+    while(findingpos != 1 && fake_dist < hp->arr[findingpos >> 1].fake_dist)
     {
         hp->arr[findingpos] = hp->arr[findingpos >> 1];
         findingpos = findingpos >> 1;
