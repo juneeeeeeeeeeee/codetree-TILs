@@ -98,11 +98,13 @@ minheap_node pop_int(minheap_int* hp)
 
 void dijkstra(int source)
 {
+    bool check[2000];
     minheap_int hp;
     hp.size = 0;
-    for(int i=0;i<=N-1;i++)
+    for(int i=0;i<N;i++)
     {
         dist[i] = INT_MAX;
+        check[i] = false;
     }
     dist[source] = 0;
     push_int(&hp, source, 0);
@@ -110,9 +112,10 @@ void dijkstra(int source)
     {
         minheap_node u = pop_int(&hp);
         if(u.fake_dist > dist[u.node]) continue; // update 안된 값
+        check[u.node] = true;
         for(int i=0;i<N;i++)
         {
-            if(map[u.node][i] != INT_MAX && u.node != i && dist[u.node] + map[u.node][i] < dist[i])
+            if(map[u.node][i] != INT_MAX && !check[i] && dist[u.node] + map[u.node][i] < dist[i])
             {
                 dist[i] = dist[u.node] + map[u.node][i];
                 push_int(&hp, i, dist[i]);
@@ -120,6 +123,7 @@ void dijkstra(int source)
         }
     }
 }
+
 int main(void)
 {
     int Q, M;
