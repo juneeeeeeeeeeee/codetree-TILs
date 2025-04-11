@@ -384,7 +384,7 @@ int main(void)
                 }
                 if(!moved)
                 {
-                    // newmap[og_p.y][og_p.x].jeonsa_array_in_mapelement[newmap[og_p.y][og_p.x].jeonsano++] = i;
+                    newmap[og_p.y][og_p.x].jeonsa_array_in_mapelement[newmap[og_p.y][og_p.x].jeonsano++] = i;
                     continue;
                 }
                 // 전사 2차 이동
