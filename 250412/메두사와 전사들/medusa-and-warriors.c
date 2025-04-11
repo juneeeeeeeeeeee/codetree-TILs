@@ -8,7 +8,6 @@ typedef struct _jeonsa{
     pos p;
     int is_active;
     int is_alive;
-    pos route[2500];
 } jeonsa;
 typedef struct _queue{
     pos arr[2500];
@@ -231,8 +230,8 @@ int main(void)
         return 0;
     }
     pos medusa_p = medusa_start_p;
-    int time = 0;
-    while(time<10)
+    // int time = 0;
+    while(1)
     {
         for(int i=0;i<N;i++)
         {
@@ -431,7 +430,7 @@ int main(void)
             }
         }
         printf("%d %d %d\n", distjeonsa, maxinactivate, diedjeonsa);
-        time++;
+        // time++;
     }
     printf("0");
     return 0;
