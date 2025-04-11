@@ -342,6 +342,14 @@ int main(void)
             }
             printf("\n");
         }
+        for(int i=0;i<N;i++)
+        {
+            for(int j=0;j<N;j++)
+            {
+                printf("%d ", map[i][j].jeonsano);
+            }
+            printf("\n");
+        }
         */
         // 전사 이동
         int diedjeonsa = 0;
@@ -369,14 +377,14 @@ int main(void)
                             diedjeonsa++;
                             goto um;
                         }
-                        newmap[new_p.y][new_p.x].jeonsa_array_in_mapelement[newmap[new_p.y][new_p.x].jeonsano++] = i;
+                        // newmap[new_p.y][new_p.x].jeonsa_array_in_mapelement[newmap[new_p.y][new_p.x].jeonsano++] = i;
                         moved = 1;
                         break;
                     }
                 }
                 if(!moved)
                 {
-                    newmap[og_p.y][og_p.x].jeonsa_array_in_mapelement[newmap[og_p.y][og_p.x].jeonsano++] = i;
+                    // newmap[og_p.y][og_p.x].jeonsa_array_in_mapelement[newmap[og_p.y][og_p.x].jeonsano++] = i;
                     continue;
                 }
                 // 전사 2차 이동
@@ -422,7 +430,7 @@ int main(void)
         }
         for(int i=0;i<M;i++)
         {
-            if(!jeonsaarray[i].is_active)
+            if(jeonsaarray[i].is_alive && !jeonsaarray[i].is_active)
             {
                 jeonsaarray[i].is_active = 1;
                 pos og_p = jeonsaarray[i].p;
