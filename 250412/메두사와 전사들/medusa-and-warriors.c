@@ -6,8 +6,8 @@ typedef struct _pos{
 } pos;
 typedef struct _jeonsa{
     pos p;
-    int is_active;
-    int is_alive;
+    bool is_active;
+    bool is_alive;
 } jeonsa;
 typedef struct _queue{
     pos arr[2500];
@@ -39,12 +39,12 @@ int dist(pos p, pos dest)
 jeonsa jeonsaarray[301];
 pos route[50][50];
 pos prev[50][50];
-int check[50][50];
-int wax[50][50];
+bool check[50][50];
+bool wax[50][50];
 mapelement map[50][50];
 mapelement newmap[50][50];
 int N, M;
-int turn;
+// int turn;
 int dy[4] = {-1, 0, 1, 0};
 int dx[4] = {0, 1, 0, -1};
 int ddy[4] = {-1, 1, 1, -1};
@@ -62,7 +62,7 @@ int BFS_medusa(pos p, pos dest)
     {
         for(int j=0;j<N;j++)
         {
-            check[i][j] = 0;
+            check[i][j] = false;
             prev[i][j].y = -1;
         }
     }
@@ -70,7 +70,7 @@ int BFS_medusa(pos p, pos dest)
     q.start = 0;
     q.len = 0;
     push(&q, p);
-    check[p.y][p.x] = 1;
+    check[p.y][p.x] = true;
     while(q.len)
     {
         pos pop_p = pop(&q);
@@ -82,7 +82,7 @@ int BFS_medusa(pos p, pos dest)
             new_p.x = pop_p.x+dx[priority1[dir]];
             if(!bound(new_p.y, new_p.x) && !check[new_p.y][new_p.x] && !map[new_p.y][new_p.x].wall) // medusa는 wall을, jeonsa는 swamp를 피함
             {
-                check[new_p.y][new_p.x] = 1;
+                check[new_p.y][new_p.x] = true;
                 push(&q, new_p);
                 prev[new_p.y][new_p.x] = pop_p;
             }
@@ -106,8 +106,8 @@ void BFS_medusa_search_jeonsa(pos p, int di_dir, int st_dir)
     q.start = 0;
     q.len = 0;
     push(&q, p);
-    check[p.y][p.x] = 1;
-    wax[p.y][p.x] = 1;
+    check[p.y][p.x] = true;
+    wax[p.y][p.x] = true;
     while(q.len)
     {
         pos pop_p = pop(&q);
@@ -118,14 +118,14 @@ void BFS_medusa_search_jeonsa(pos p, int di_dir, int st_dir)
         st_p.x = pop_p.x+dx[st_dir];
         if(!bound(di_p.y, di_p.x) && !check[di_p.y][di_p.x])
         {
-            check[di_p.y][di_p.x] = 1;
-            wax[di_p.y][di_p.x] = 1;
+            check[di_p.y][di_p.x] = true;
+            wax[di_p.y][di_p.x] = true;
             push(&q, di_p);
         }
         if(!bound(st_p.y, st_p.x) && !check[st_p.y][st_p.x])
         {
-            check[st_p.y][st_p.x] = 1;
-            wax[st_p.y][st_p.x] = 1;
+            check[st_p.y][st_p.x] = true;
+            wax[st_p.y][st_p.x] = true;
             push(&q, st_p);
         }
     }
@@ -140,8 +140,8 @@ int BFS_medusa_search(pos p, int di_dir, int st_dir, int um)
     {
         for(int j=0;j<N;j++)
         {
-            check[i][j] = 0; // check 배열 재활용
-            wax[i][j] = 0;
+            check[i][j] = false; // check 배열 재활용
+            wax[i][j] = false;
         }
     }
     if(bound(p.y, p.x)) return 0;
@@ -149,19 +149,15 @@ int BFS_medusa_search(pos p, int di_dir, int st_dir, int um)
     if(map[p.y][p.x].jeonsano)
     {
         if(um)
-        {
             for(int i=0;i<map[p.y][p.x].jeonsano;i++)
-            {
-                jeonsaarray[map[p.y][p.x].jeonsa_array_in_mapelement[i]].is_active = 0;
-            }
-        }
+                jeonsaarray[map[p.y][p.x].jeonsa_array_in_mapelement[i]].is_active = false;
         return map[p.y][p.x].jeonsano;
     }
     queue q;
     q.start = 0;
     q.len = 0;
     push(&q, p);
-    check[p.y][p.x] = 1;
+    check[p.y][p.x] = true;
     while(q.len)
     {
         pos pop_p = pop(&q);
@@ -172,17 +168,13 @@ int BFS_medusa_search(pos p, int di_dir, int st_dir, int um)
         st_p.x = pop_p.x+dx[st_dir];
         if(!bound(di_p.y, di_p.x) && !check[di_p.y][di_p.x] && !wax[di_p.y][di_p.x])
         {
-            check[di_p.y][di_p.x] = 1;
+            check[di_p.y][di_p.x] = true;
             if(um) map[di_p.y][di_p.x].wall = 2;
             if(map[di_p.y][di_p.x].jeonsano) // 전사가 위치한 칸, 다른 칸들은 보이지 않게
             {
                 if(um)
-                {
                     for(int i=0;i<map[di_p.y][di_p.x].jeonsano;i++)
-                    {
-                        jeonsaarray[map[di_p.y][di_p.x].jeonsa_array_in_mapelement[i]].is_active = 0;
-                    }
-                }
+                        jeonsaarray[map[di_p.y][di_p.x].jeonsa_array_in_mapelement[i]].is_active = false;
                 else count += map[di_p.y][di_p.x].jeonsano;
                 BFS_medusa_search_jeonsa(di_p, di_dir, st_dir);
             }
@@ -190,17 +182,13 @@ int BFS_medusa_search(pos p, int di_dir, int st_dir, int um)
         }
         if(!bound(st_p.y, st_p.x) && !check[st_p.y][st_p.x] && !wax[st_p.y][st_p.x])
         {
-            check[st_p.y][st_p.x] = 1;
+            check[st_p.y][st_p.x] = true;
             if(um) map[st_p.y][st_p.x].wall = 2;
             if(map[st_p.y][st_p.x].jeonsano) // 전사가 위치한 칸, 다른 칸들은 보이지 않게
             {
                 if(um)
-                {
                     for(int i=0;i<map[st_p.y][st_p.x].jeonsano;i++)
-                    {
-                        jeonsaarray[map[st_p.y][st_p.x].jeonsa_array_in_mapelement[i]].is_active = 0;
-                    }
-                }
+                        jeonsaarray[map[st_p.y][st_p.x].jeonsa_array_in_mapelement[i]].is_active = false;
                 else count += map[st_p.y][st_p.x].jeonsano;
                 BFS_medusa_search_jeonsa(st_p, di_dir, st_dir);
             }
@@ -218,8 +206,8 @@ int main(void)
     {
         scanf("%d %d", &jeonsaarray[i].p.y, &jeonsaarray[i].p.x);
         map[jeonsaarray[i].p.y][jeonsaarray[i].p.x].jeonsa_array_in_mapelement[map[jeonsaarray[i].p.y][jeonsaarray[i].p.x].jeonsano++] = i;
-        jeonsaarray[i].is_active = 1;
-        jeonsaarray[i].is_alive = 1;
+        jeonsaarray[i].is_active = true;
+        jeonsaarray[i].is_alive = true;
     }
     for(int i=0;i<N;i++)
         for(int j=0;j<N;j++)
@@ -230,7 +218,7 @@ int main(void)
         return 0;
     }
     pos medusa_p = medusa_start_p;
-    // int time = 0;
+    int time = 0;
     while(1)
     {
         for(int i=0;i<N;i++)
@@ -245,12 +233,8 @@ int main(void)
         // 메두사 이동
         medusa_p = route[medusa_p.y][medusa_p.x];
         if(map[medusa_p.y][medusa_p.x].jeonsano)
-        {
             for(int i=0;i<map[medusa_p.y][medusa_p.x].jeonsano;i++)
-            {
-                jeonsaarray[map[medusa_p.y][medusa_p.x].jeonsa_array_in_mapelement[i]].is_alive = 0;
-            }
-        }
+                jeonsaarray[map[medusa_p.y][medusa_p.x].jeonsa_array_in_mapelement[i]].is_alive = false;
         map[medusa_p.y][medusa_p.x].jeonsano = 0;
         
         if(medusa_p.y == medusa_end_p.y && medusa_p.x == medusa_end_p.x) break;
@@ -287,13 +271,11 @@ int main(void)
             start_p.x = medusa_p.x+startpos_x[dir];
             sai[dir] = BFS_medusa_search(start_p, dir/2, ((dir+1)/2)%4, 0);
         }
-        
         int dirsum[4];
         for(int dir=0;dir<=3;dir++)
         {
             dirsum[dir] = st[dir] + sai[dir*2] + sai[(dir*2+7)%8];
         }
-        // printf("\ndirsum: %d %d %d %d\n", dirsum[0], dirsum[1], dirsum[2], dirsum[3]);
         int maxdir = -1;
         int maxinactivate = -1;
         for(int dir = 0;dir<=3;dir++)
@@ -304,7 +286,6 @@ int main(void)
                 maxdir = priority1[dir];
             }
         }
-        // printf("%d: %d\n", time, maxdir);
 
         // map에 색칠놀이
         pos st_p;
@@ -319,10 +300,7 @@ int main(void)
             if(map[st_p.y][st_p.x].jeonsano)
             {
                 for(int i=0;i<map[st_p.y][st_p.x].jeonsano;i++)
-                {
-                    jeonsaarray[map[st_p.y][st_p.x].jeonsa_array_in_mapelement[i]].is_active = 0;
-                }
-                // map[st_p.y][st_p.x].jeonsano = 0;
+                    jeonsaarray[map[st_p.y][st_p.x].jeonsa_array_in_mapelement[i]].is_active = false;
                 break;
             }
         }
@@ -333,24 +311,6 @@ int main(void)
         start_p.y = medusa_p.y+startpos_y[(maxdir*2+7)%8];
         start_p.x = medusa_p.x+startpos_x[(maxdir*2+7)%8];
         BFS_medusa_search(start_p, (maxdir+3)%4, maxdir, 1);
-        /*
-        for(int i=0;i<N;i++)
-        {
-            for(int j=0;j<N;j++)
-            {
-                printf("%d ", map[i][j].wall);
-            }
-            printf("\n");
-        }
-        for(int i=0;i<N;i++)
-        {
-            for(int j=0;j<N;j++)
-            {
-                printf("%d ", map[i][j].jeonsano);
-            }
-            printf("\n");
-        }
-        */
         // 전사 이동
         int diedjeonsa = 0;
         int distjeonsa = 0;
@@ -358,11 +318,10 @@ int main(void)
         {
             if(jeonsaarray[i].is_active && jeonsaarray[i].is_alive)
             {
-                // printf("jeonsa %d: %d %d\n", i, jeonsaarray[i].p.y, jeonsaarray[i].p.x);
                 pos og_p = jeonsaarray[i].p;
                 pos new_p;
                 // 전사 1차 이동
-                int moved = 0;
+                bool moved = false;
                 for(int dir = 0;dir<=3;dir++)
                 {
                     new_p.y = og_p.y + dy[priority1[dir]];
@@ -373,12 +332,11 @@ int main(void)
                         distjeonsa++;
                         if(new_p.y == medusa_p.y && new_p.x == medusa_p.x)
                         {
-                            jeonsaarray[i].is_alive = 0;
+                            jeonsaarray[i].is_alive = false;
                             diedjeonsa++;
                             goto um;
                         }
-                        // newmap[new_p.y][new_p.x].jeonsa_array_in_mapelement[newmap[new_p.y][new_p.x].jeonsano++] = i;
-                        moved = 1;
+                        moved = true;
                         break;
                     }
                 }
@@ -389,7 +347,7 @@ int main(void)
                 }
                 // 전사 2차 이동
                 og_p = jeonsaarray[i].p;
-                moved = 0;
+                moved = false;
                 for(int dir = 0;dir<=3;dir++)
                 {
                     new_p.y = og_p.y + dy[priority2[dir]];
@@ -400,12 +358,12 @@ int main(void)
                         distjeonsa++;
                         if(new_p.y == medusa_p.y && new_p.x == medusa_p.x)
                         {
-                            jeonsaarray[i].is_alive = 0;
+                            jeonsaarray[i].is_alive = false;
                             diedjeonsa++;
                             goto um;
                         }
                         newmap[new_p.y][new_p.x].jeonsa_array_in_mapelement[newmap[new_p.y][new_p.x].jeonsano++] = i;
-                        moved = 1;
+                        moved = true;
                         break;
                     }
                 }
@@ -432,13 +390,13 @@ int main(void)
         {
             if(jeonsaarray[i].is_alive && !jeonsaarray[i].is_active)
             {
-                jeonsaarray[i].is_active = 1;
+                jeonsaarray[i].is_active = true;
                 pos og_p = jeonsaarray[i].p;
                 map[og_p.y][og_p.x].jeonsa_array_in_mapelement[map[og_p.y][og_p.x].jeonsano++] = i;
             }
         }
         printf("%d %d %d\n", distjeonsa, maxinactivate, diedjeonsa);
-        // time++;
+        time++;
     }
     printf("0");
     return 0;
