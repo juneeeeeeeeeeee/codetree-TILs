@@ -36,6 +36,11 @@ int dist(pos p, pos dest)
 {
     return abs(p.y-dest.y) + abs(p.x-dest.x);
 }
+bool is_equal_pos(pos p1, pos p2)
+{
+    if(p1.y == p2.y && p1.x == p2.x) return true;
+    else return false;
+}
 jeonsa jeonsaarray[301];
 pos route[50][50];
 pos prev[50][50];
@@ -44,17 +49,16 @@ bool wax[50][50];
 mapelement map[50][50];
 mapelement newmap[50][50];
 int N, M;
-// int turn;
 int dy[4] = {-1, 0, 1, 0};
 int dx[4] = {0, 1, 0, -1};
 int ddy[4] = {-1, 1, 1, -1};
 int ddx[4] = {1, 1, -1, -1};
 int priority1[4] = {0, 2, 3, 1};
 int priority2[4] = {3, 1, 0, 2};
-int bound(int y, int x)
+bool bound(int y, int x)
 {
-    if(y == -1 || y == N || x == -1 || x == N) return 1;
-    else return 0;
+    if(y == -1 || y == N || x == -1 || x == N) return true;
+    else return false;
 }
 int BFS_medusa(pos p, pos dest)
 {
@@ -74,7 +78,7 @@ int BFS_medusa(pos p, pos dest)
     while(q.len)
     {
         pos pop_p = pop(&q);
-        if(pop_p.y == dest.y && pop_p.x == dest.x) break;
+        if(is_equal_pos(pop_p, dest)) break;
         for(int dir = 0;dir<=3;dir++)
         {
             pos new_p;
@@ -91,7 +95,7 @@ int BFS_medusa(pos p, pos dest)
     if(prev[dest.y][dest.x].y == -1) return -1;
     pos temp_p = dest;
     pos temptemp_p;
-    while(temp_p.y != p.y || temp_p.x != p.x)
+    while(!is_equal_pos(temp_p, p))
     {
         temptemp_p = prev[temp_p.y][temp_p.x];
         route[temptemp_p.y][temptemp_p.x] = temp_p;
@@ -237,7 +241,7 @@ int main(void)
                 jeonsaarray[map[medusa_p.y][medusa_p.x].jeonsa_array_in_mapelement[i]].is_alive = false;
         map[medusa_p.y][medusa_p.x].jeonsano = 0;
         
-        if(medusa_p.y == medusa_end_p.y && medusa_p.x == medusa_end_p.x) break;
+        if(is_equal_pos(medusa_p, medusa_end_p)) break;
 
         // 메두사 시선
         // 대각선, 수직, 수평 탐색
@@ -330,7 +334,7 @@ int main(void)
                     {
                         jeonsaarray[i].p = new_p;
                         distjeonsa++;
-                        if(new_p.y == medusa_p.y && new_p.x == medusa_p.x)
+                        if(is_equal_pos(new_p, medusa_p))
                         {
                             jeonsaarray[i].is_alive = false;
                             diedjeonsa++;
@@ -356,7 +360,7 @@ int main(void)
                     {
                         jeonsaarray[i].p = new_p;
                         distjeonsa++;
-                        if(new_p.y == medusa_p.y && new_p.x == medusa_p.x)
+                        if(is_equal_pos(new_p, medusa_p))
                         {
                             jeonsaarray[i].is_alive = false;
                             diedjeonsa++;
