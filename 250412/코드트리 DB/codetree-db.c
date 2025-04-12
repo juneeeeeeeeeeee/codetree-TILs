@@ -58,11 +58,8 @@ segnode* delete(segnode* node, int l, int r, int value)
     node->sum -= value;
     if(l == r)
     {
-        if(node->name)
-        {
-            free(node->name);
-            node->name = NULL;
-        }
+        free(node->name);
+        node->name = NULL;
         return node;
     }
     int m = (l+r)>>1;
