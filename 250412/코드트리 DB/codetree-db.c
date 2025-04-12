@@ -16,7 +16,6 @@ typedef struct _namenode{
     struct _namenode* left;
     struct _namenode* right;
 } namenode; // BST
-int delete_value;
 
 int search(segnode* node, int l, int r, int value)
 {
@@ -108,7 +107,7 @@ int search_name(namenode* node, const char* name)
     int compare = strcmp(node->name, name);
     if(compare > 0) return search_name(node->left, name);
     else if(compare < 0) return search_name(node->right, name);
-    else return 1;
+    else return node->value;
 }
 
 namenode* insert_name(namenode* node, const char* name, int value)
@@ -136,7 +135,6 @@ namenode* delete_name(namenode* node, const char* name)
     else if(compare < 0) node->right = delete_name(node->right, name);
     else // 이름 찾음
     {
-        delete_value = node->value;
         if(!node->left)
         {
             namenode* rightnode = node->right;
@@ -208,14 +206,14 @@ int main(void)
         {
             char name[11];
             scanf("%s", name);
-            delete_value = 0;
-            nameroot = delete_name(nameroot, name);
-            if(!delete_value) printf("0\n");
-            else
+            int delete_value = search_name(nameroot, name);
+            if(delete_value)
             {
+                nameroot = delete_name(nameroot, name);
                 printf("%d\n", delete_value);
                 segroot = delete(segroot, MINV, MAXV, delete_value);
             }
+            else printf("0\n");
         }
         else if(!strcmp(s, "rank"))
         {
